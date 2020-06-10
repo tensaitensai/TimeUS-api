@@ -1,6 +1,6 @@
 package main
 
 func main() {
-	router := newRouter()
+	router := router.Init()
 	router.Logger.Fatal(router.Start(":8080"))
 }
