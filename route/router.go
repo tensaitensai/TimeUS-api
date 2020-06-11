@@ -1,8 +1,9 @@
-package main
+package route
 
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/tensaitensai/TimeUS-api/handler"
 )
 
 //Init is main router

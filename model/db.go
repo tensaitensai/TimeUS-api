@@ -11,5 +11,6 @@ func init() {
 	}
 	defer db.Close()
 
-	//db.AutoMigrate(&User{})
+	db.AutoMigrate(&User{})
+	db.AutoMigrate(&Post{})
 }

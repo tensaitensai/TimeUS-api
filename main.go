@@ -1,6 +1,8 @@
 package main
 
+import "github.com/tensaitensai/TimeUS-api/route"
+
 func main() {
-	router := router.Init()
-	router.Logger.Fatal(router.Start(":8080"))
+	router := route.Init()
+	route.Logger.Fatal(route.Start(":8080"))
 }
