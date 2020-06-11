@@ -1,4 +1,4 @@
-module github.com/tensaitensai/TimeUS
+module github.com/tensaitensai/TimeUS-api
 
 go 1.14
 
