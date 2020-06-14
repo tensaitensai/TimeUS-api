@@ -1,5 +1,5 @@
 FROM golang:alpine as builder
-FROM airpine:3.7
+FROM alpine:3.7
 
 WORKDIR /
 ENV GOPATH /go
