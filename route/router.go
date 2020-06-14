@@ -19,12 +19,13 @@ func Init() *echo.Echo {
 	e.POST("/signup", handler.Signup) // POST signup
 	e.POST("/login", handler.Login)   // POST login
 
-	api := e.Group("/api")
-	api.Use(middleware.JWTWithConfig(handler.Config))
-	api.GET("/ranking", handler.Getdata)               // GET api/ranking
-	api.POST("/addpost", handler.Addpost)              // POST api/addpost 勉強した分加えるやつ
-	api.DELETE("/addpost/:id", handler.Deletepost)     // DELETE api/:id 消す
-	api.PUT("/addpost/:id/config", handler.Updatepost) // PUT addpost/:id/config 変更する
-
+	/*
+		api := e.Group("/api")
+		api.Use(middleware.JWTWithConfig(handler.Config))
+		api.GET("/ranking", handler.Getdata)               // GET api/ranking
+		api.POST("/post", handler.Addpost)              // POST api/post 勉強した分加えるやつ
+		api.DELETE("/post/:id", handler.Deletepost)     // DELETE api/post/:id 消す
+		api.PUT("/apost/:id", handler.Updatepost) // PUT api/post/:id 変更する
+	*/
 	return e
 }
