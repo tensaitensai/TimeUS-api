@@ -6,7 +6,7 @@ RUN \
     mkdir -p $APPDIR
 ADD . $APPDIR/
 WORKDIR $APPDIR
-RUN go build -ldflags "-s -w" -o timeus-api ./main.go
+RUN go build -ldflags "-s -w" -o timeus-api cmd/main.go
 RUN mv timeus-api /
 
 FROM alpine
