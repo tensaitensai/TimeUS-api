@@ -7,8 +7,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/tensaitensai/TimeUS-api/pkg/database"
-	"github.com/tensaitensai/TimeUS-api/pkg/model"
+	"github.com/tensaitensai/TimeUS-api/internal/database"
+	"github.com/tensaitensai/TimeUS-api/internal/model"
 )
 
 type jwtCustomClaims struct {

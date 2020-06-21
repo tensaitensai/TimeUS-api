@@ -3,7 +3,7 @@ package database
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/tensaitensai/TimeUS-api/pkg/model"
+	"github.com/tensaitensai/TimeUS-api/internal/model"
 )
 
 var db *gorm.DB

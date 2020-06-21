@@ -5,20 +5,17 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
-	"github.com/tensaitensai/TimeUS-api/pkg/database"
-	"github.com/tensaitensai/TimeUS-api/pkg/model"
+	"github.com/tensaitensai/TimeUS-api/internal/database"
+	"github.com/tensaitensai/TimeUS-api/internal/model"
 )
 
 /*
-func GetPostsToday(c echo.Context) error {
-	uid := userIDFromToken(c)
-	if user := database.FindUser(&model.User{ID: uid}); user.ID == 0 {
-		return APIResponseError(c, http.StatusBadRequest, "Bad Request")
-	}
+func GetPost(c echo.Context) error {
+}
 
-	posts := database.FindPosts(&model.Post{UID: uid})
-	return c.JSON(http.StatusOK, posts)
-}*/
+func GetRanking(c echo.Context) error {
+}
+*/
 
 func AddPost(c echo.Context) error {
 	uid := userIDFromToken(c)
@@ -31,6 +28,9 @@ func AddPost(c echo.Context) error {
 		return err
 	}
 
+	if pUID, err := strconv.Atoi(c.Param("uid")); err != nil || pUID != uid {
+		return APIResponseError(c, http.StatusBadRequest, "invalid url (Userid is not int)")
+	}
 	if post.Subjectname == "" {
 		return APIResponseError(c, http.StatusBadRequest, "invalid Subjectname of post")
 	}
@@ -47,13 +47,16 @@ func DeletePost(c echo.Context) error {
 		return APIResponseError(c, http.StatusBadRequest, "Bad Request")
 	}
 
-	postID, err := strconv.Atoi(c.Param("id"))
+	if pUID, err := strconv.Atoi(c.Param("uid")); err != nil || pUID != uid {
+		return APIResponseError(c, http.StatusBadRequest, "invalid url (Userid is not int)")
+	}
+	pID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return APIResponseError(c, http.StatusBadRequest, "Postid is not int")
+		return APIResponseError(c, http.StatusBadRequest, "invalid url (Postid is not int)")
 	}
 
-	if err := database.DeletePost(&model.Post{ID: postID, UserID: uid}); err != nil {
-		return APIResponseError(c, http.StatusBadRequest, err) //治す
+	if err := database.DeletePost(&model.Post{ID: pID, UserID: uid}); err != nil {
+		return APIResponseError(c, http.StatusBadRequest, "") //治す
 	}
 
 	return c.NoContent(http.StatusNoContent)
@@ -65,19 +68,33 @@ func UpdatePost(c echo.Context) error {
 		return APIResponseError(c, http.StatusBadRequest, "Bad Request")
 	}
 
-	postID, err := strconv.Atoi(c.Param("id"))
+	p := new(model.Post)
+	if err := c.Bind(p); err != nil {
+		return err
+	}
+
+	if pUID, err := strconv.Atoi(c.Param("uid")); err != nil || pUID != uid {
+		return APIResponseError(c, http.StatusBadRequest, "invalid url (Userid is not int)")
+	}
+	pID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return APIResponseError(c, http.StatusBadRequest, "Postid is not int")
+		return APIResponseError(c, http.StatusBadRequest, "invalid url (Postid is not int)")
+	}
+	if p.Subjectname == "" {
+		return APIResponseError(c, http.StatusBadRequest, "invalid Subjectname of post")
 	}
 
-	posts := database.FindPosts(&model.Post{ID: postID, UserID: uid})
-	if len(posts) != 1 {
-		return APIResponseError(c, http.StatusBadRequest, "Bad Request")
+	post := database.FindGetPost(&model.Post{ID: pID, UserID: uid})
+	if post.Subjectname == "" {
+		return APIResponseError(c, http.StatusUnauthorized, "invalid post")
 	}
 
-	post := posts[0]
-	if err := database.UpdatePost(&post); err != nil {
-		return APIResponseError(c, http.StatusBadRequest, err) //治す
+	post.Subjectname = p.Subjectname
+	post.Subjectstarttime = p.Subjectstarttime
+	post.Subjectendtime = p.Subjectendtime
+
+	if err := database.UpdatePost(post); err != nil {
+		return APIResponseError(c, http.StatusBadRequest, "") //治す
 	}
 
 	return c.NoContent(http.StatusNoContent)

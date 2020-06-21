@@ -3,17 +3,23 @@ package database
 import (
 	"fmt"
 
-	"github.com/tensaitensai/TimeUS-api/pkg/model"
+	"github.com/tensaitensai/TimeUS-api/internal/model"
 )
 
 func CreatePost(post *model.Post) {
 	db.Create(post)
 }
 
-func FindPosts(p *model.Post) model.Posts {
+func FindListPosts(p *model.Post) *model.Posts {
 	var posts model.Posts
 	db.Where(p).Find(&posts)
-	return posts
+	return &posts
+}
+
+func FindGetPost(p *model.Post) *model.Post {
+	var post model.Post
+	db.Where(p).First(&post)
+	return &post
 }
 
 func DeletePost(p *model.Post) error {
