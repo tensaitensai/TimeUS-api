@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/tensaitensai/TimeUS-api/internal/database"
 	"github.com/tensaitensai/TimeUS-api/internal/model"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type jwtCustomClaims struct {
@@ -31,13 +32,23 @@ func Signup(c echo.Context) error {
 	}
 
 	if user.Email == "" || user.Password == "" {
-		return APIResponseError(c, http.StatusBadRequest, "invalid email or password")
+		return APIResponseError(c, http.StatusBadRequest, "invalid email or password", nil)
+	}
+
+	if len(user.Password) > 32 || len(user.Password) < 8 {
+		return APIResponseError(c, http.StatusBadRequest, "password is long or short", nil)
 	}
 
 	if u := database.FindUser(&model.User{Email: user.Email}); u.ID != 0 {
-		return APIResponseError(c, http.StatusConflict, "email already exists")
+		return APIResponseError(c, http.StatusConflict, "email already exists", nil)
 	}
 
+	hash, err := hashpassword(user.Password)
+	if err != nil {
+		return APIResponseError(c, http.StatusBadRequest, "couldn't hash password", err)
+	}
+
+	user.Password = hash
 	database.CreateUser(user)
 	user.Password = ""
 
@@ -51,8 +62,11 @@ func Login(c echo.Context) error {
 	}
 
 	user := database.FindUser(&model.User{Email: u.Email})
-	if user.ID == 0 || user.Password != u.Password {
-		return APIResponseError(c, http.StatusUnauthorized, "invalid email or password")
+	if user.ID == 0 {
+		return APIResponseError(c, http.StatusUnauthorized, "invalid email", nil)
+	}
+	if err := comparepassword(user.Password, u.Password); err != nil {
+		return APIResponseError(c, http.StatusUnauthorized, "invalid password", err)
 	}
 
 	claims := &jwtCustomClaims{
@@ -79,4 +93,16 @@ func userIDFromToken(c echo.Context) int {
 	claims := user.Claims.(*jwtCustomClaims)
 	uid := claims.UID
 	return uid
+}
+
+func hashpassword(pass string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hash), err
+}
+
+func comparepassword(hash, pass string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(pass))
 }

@@ -24,10 +24,10 @@ func Init() *echo.Echo {
 
 	api := e.Group("/api") //
 	api.Use(middleware.JWTWithConfig(handler.Config))
-	//api.PUT("/api/user/:uid") // PUT api/user/:uid　プロフィール変更でつかう
-	api.POST("/user/:uid/post", handler.AddPost)          // POST api/user/:uid/post 勉強した分加えるやつ
-	api.DELETE("/user/:uid/post/:id", handler.DeletePost) // DELETE api/user/:uid/post/:id post消す
-	api.PUT("/user/:uid/post/:id", handler.UpdatePost)    // PUT /user/:uid/post/:id 変更する
+	//api.PUT("user/")                            // PUT api/user/　プロフィール変更でつかう
+	api.POST("/post", handler.AddPost)          // POST api/post 勉強した分加えるやつ
+	api.DELETE("/post/:id", handler.DeletePost) // DELETE api/post/:id post消す
+	api.PUT("/post/:id", handler.UpdatePost)    // PUT /user/:uid/post/:id 変更する
 
 	return e
 }

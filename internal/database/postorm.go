@@ -10,16 +10,21 @@ func CreatePost(post *model.Post) {
 	db.Create(post)
 }
 
-func FindListPosts(p *model.Post) *model.Posts {
+func FindListPosts(p *model.Post) (model.Posts, error) {
 	var posts model.Posts
 	db.Where(p).Find(&posts)
-	return &posts
+	if len(posts) == 0 {
+		return posts, fmt.Errorf("Could not find Posts (%v)", p)
+	}
+	return posts, nil
 }
 
-func FindGetPost(p *model.Post) *model.Post {
+func FindGetPost(p *model.Post) (*model.Post, error) {
 	var post model.Post
-	db.Where(p).First(&post)
-	return &post
+	if err := db.Where(p).First(&post).Error; err != nil {
+		return &post, fmt.Errorf("Could not find Post (%v)", p)
+	}
+	return &post, nil
 }
 
 func DeletePost(p *model.Post) error {
