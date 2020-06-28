@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/tensaitensai/TimeUS-api/internal/model"
 )
@@ -12,9 +13,12 @@ func CreatePost(post *model.Post) {
 
 func FindListPosts(p *model.Post) (model.Posts, error) {
 	var posts model.Posts
-	db.Where(p).Find(&posts)
-	if len(posts) == 0 {
-		return posts, fmt.Errorf("Could not find Posts (%v)", p)
+	errors := db.Where(p).Find(&posts).GetErrors()
+	if len(errors) != 0 {
+		for _, err := range errors {
+			log.Println(err)
+		}
+		return nil, fmt.Errorf("Could not find Posts (%v)", p)
 	}
 	return posts, nil
 }
@@ -22,7 +26,7 @@ func FindListPosts(p *model.Post) (model.Posts, error) {
 func FindGetPost(p *model.Post) (*model.Post, error) {
 	var post model.Post
 	if err := db.Where(p).First(&post).Error; err != nil {
-		return &post, fmt.Errorf("Could not find Post (%v)", p)
+		return nil, fmt.Errorf("Could not find Post (%v)", p)
 	}
 	return &post, nil
 }
