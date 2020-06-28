@@ -1,6 +1,6 @@
 package main
 
-import "github.com/tensaitensai/TimeUS-api/route"
+import "github.com/tensaitensai/TimeUS-api/internal/route"
 
 func main() {
 	route := route.Init()

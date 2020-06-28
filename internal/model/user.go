@@ -13,13 +13,3 @@ type User struct {
 	Bio        string    `json:"bio" gorm:"column:bio;type:varchar(255)"`
 	Myurl      string    `json:"myurl" gorm:"column:myurl;type:varchar(255)"`
 }
-
-func CreateUser(user *User) {
-	db.Create(user)
-}
-
-func FindUser(u *User) User {
-	var user User
-	db.Where(u).First(&user)
-	return user
-}

@@ -1,6 +1,10 @@
-package model
+package database
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/tensaitensai/TimeUS-api/internal/model"
+)
 
 var db *gorm.DB
 
@@ -11,6 +15,6 @@ func init() {
 	}
 	defer db.Close()
 
-	db.AutoMigrate(&User{})
-	db.AutoMigrate(&Post{})
+	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.Post{})
 }
