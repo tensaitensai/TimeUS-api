@@ -20,7 +20,7 @@ func GetRanking(c echo.Context) error {
 func AddPost(c echo.Context) error {
 	uid := userIDFromToken(c)
 	if user := database.FindUser(&model.User{ID: uid}); user.ID == 0 {
-		return APIResponseError(c, http.StatusBadRequest, "Bad Request", nil)
+		return APIResponseError(c, http.StatusBadRequest, "Bad Request")
 	}
 
 	post := new(model.Post)
@@ -29,7 +29,7 @@ func AddPost(c echo.Context) error {
 	}
 
 	if post.Subjectname == "" {
-		return APIResponseError(c, http.StatusBadRequest, "invalid Subjectname of post", nil)
+		return APIResponseError(c, http.StatusBadRequest, "invalid Subjectname of post")
 	}
 
 	post.UserID = uid
@@ -41,16 +41,16 @@ func AddPost(c echo.Context) error {
 func DeletePost(c echo.Context) error {
 	uid := userIDFromToken(c)
 	if user := database.FindUser(&model.User{ID: uid}); user.ID == 0 {
-		return APIResponseError(c, http.StatusBadRequest, "Bad Request", nil)
+		return APIResponseError(c, http.StatusBadRequest, "Bad Request")
 	}
 
 	pID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return APIResponseError(c, http.StatusBadRequest, "invalid url (Postid is not int)", err)
+		return APIResponseErrorLog(c, http.StatusBadRequest, "invalid url (Postid is not int)", err)
 	}
 
 	if err := database.DeletePost(&model.Post{ID: pID, UserID: uid}); err != nil {
-		return APIResponseError(c, http.StatusBadRequest, "Could not find Post to dalete", err)
+		return APIResponseErrorLog(c, http.StatusBadRequest, "Could not find Post to delete", err)
 	}
 
 	return c.NoContent(http.StatusNoContent)
@@ -59,7 +59,7 @@ func DeletePost(c echo.Context) error {
 func UpdatePost(c echo.Context) error {
 	uid := userIDFromToken(c)
 	if user := database.FindUser(&model.User{ID: uid}); user.ID == 0 {
-		return APIResponseError(c, http.StatusBadRequest, "Bad Request", nil)
+		return APIResponseError(c, http.StatusBadRequest, "Bad Request")
 	}
 
 	p := new(model.Post)
@@ -69,16 +69,16 @@ func UpdatePost(c echo.Context) error {
 
 	pID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return APIResponseError(c, http.StatusBadRequest, "invalid url (Postid is not int)", err)
+		return APIResponseErrorLog(c, http.StatusBadRequest, "invalid url (Postid is not int)", err)
 	}
 	if p.Subjectname == "" {
-		return APIResponseError(c, http.StatusBadRequest, "invalid Subjectname of post", nil)
+		return APIResponseError(c, http.StatusBadRequest, "invalid Subjectname of post")
 	}
 
 	p.ID = pID
 	p.UserID = uid
 	if err := database.UpdatePost(p); err != nil {
-		return APIResponseError(c, http.StatusBadRequest, "Could not find Post to update", err)
+		return APIResponseErrorLog(c, http.StatusBadRequest, "Could not find Post to update", err)
 	}
 
 	return c.NoContent(http.StatusNoContent)

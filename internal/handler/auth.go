@@ -32,20 +32,20 @@ func Signup(c echo.Context) error {
 	}
 
 	if user.Email == "" || user.Password == "" {
-		return APIResponseError(c, http.StatusBadRequest, "invalid email or password", nil)
+		return APIResponseError(c, http.StatusBadRequest, "invalid email or password")
 	}
 
 	if len(user.Password) > 32 || len(user.Password) < 8 {
-		return APIResponseError(c, http.StatusBadRequest, "password is long or short", nil)
+		return APIResponseError(c, http.StatusBadRequest, "password is long or short")
 	}
 
 	if u := database.FindUser(&model.User{Email: user.Email}); u.ID != 0 {
-		return APIResponseError(c, http.StatusConflict, "email already exists", nil)
+		return APIResponseError(c, http.StatusConflict, "email already exists")
 	}
 
 	hash, err := hashpassword(user.Password)
 	if err != nil {
-		return APIResponseError(c, http.StatusBadRequest, "couldn't hash password", err)
+		return APIResponseErrorLog(c, http.StatusBadRequest, "couldn't hash password", err)
 	}
 
 	user.Password = hash
@@ -63,10 +63,10 @@ func Login(c echo.Context) error {
 
 	user := database.FindUser(&model.User{Email: u.Email})
 	if user.ID == 0 {
-		return APIResponseError(c, http.StatusUnauthorized, "invalid email", nil)
+		return APIResponseError(c, http.StatusUnauthorized, "invalid email")
 	}
 	if err := comparepassword(user.Password, u.Password); err != nil {
-		return APIResponseError(c, http.StatusUnauthorized, "invalid password", err)
+		return APIResponseErrorLog(c, http.StatusUnauthorized, "invalid password", err)
 	}
 
 	claims := &jwtCustomClaims{
