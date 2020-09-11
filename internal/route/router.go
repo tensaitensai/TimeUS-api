@@ -19,8 +19,9 @@ func Init() *echo.Echo {
 	e.POST("/signup", handler.Signup) // POST signup
 	e.POST("/login", handler.Login)   // POST login
 
+	e.GET("/user/:uid/post", handler.GetPost) // GET user/:uid/post その人の勉強分をもらうやつ
+
 	//e.GET("/ranking", handler.GetRanking) // GET ranking ランキング
-	//e.GET("/user/:uid/post", handler.GetPost) // GET user/:uid/post その人の勉強分をもらうやつ
 
 	api := e.Group("/api") //
 	api.Use(middleware.JWTWithConfig(handler.Config))

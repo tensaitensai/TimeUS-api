@@ -3,16 +3,43 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/tensaitensai/TimeUS-api/internal/database"
 	"github.com/tensaitensai/TimeUS-api/internal/model"
 )
 
-/*
 func GetPost(c echo.Context) error {
+	uid, err := strconv.Atoi(c.Param("uid"))
+	if err != nil {
+		return APIResponseErrorLog(c, http.StatusBadRequest, "invalid url (userid is not int)", err)
+	}
+
+	item, err := strconv.Atoi(c.QueryParam("item"))
+	if err != nil {
+		return APIResponseErrorLog(c, http.StatusBadRequest, "invalid url (item is not int)", err)
+	}
+
+	layout := "2006-01-02"
+	startdate, err := time.Parse(layout, c.QueryParam("startdate"))
+	if err != nil {
+		return APIResponseErrorLog(c, http.StatusBadRequest, "invalid url (startdate is not int)", err)
+	}
+	enddate, err := time.Parse(layout, c.QueryParam("enddate"))
+	if err != nil {
+		return APIResponseErrorLog(c, http.StatusBadRequest, "invalid url (enddate is not int)", err)
+	}
+
+	posts, err := database.FindPostsOnConditions(&model.Post{UserID: uid}, item, startdate, enddate)
+	if err != nil {
+		return APIResponseErrorLog(c, http.StatusBadRequest, "Could not find Posts", err)
+	}
+
+	return c.JSON(http.StatusOK, posts)
 }
 
+/*
 func GetRanking(c echo.Context) error {
 }
 */
